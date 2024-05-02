@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Uygulaması</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="registerPage">
+    <h2>Kayıt Ol</h2>
+    <input type="text" id="usernameInput" placeholder="Kullanıcı Adı">
+    <button onclick="register()">Kayıt Ol</button>
+  </div>
+
+  <div id="chatPage" style="display: none;">
+    <h2>Hoş Geldiniz, <span id="welcomeMessage"></span>!</h2>
+    <div id="messageContainer"></div>
+    <input type="text" id="messageInput" placeholder="Mesajınızı yazın...">
+    <button onclick="sendMessage()">Gönder</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+<style>
+  
+  body {
+  font-family: Arial, sans-serif;
+}
+
+#registerPage, #chatPage {
+  text-align: center;
+  margin: 50px auto;
+  max-width: 400px;
+}
+
+input[type="text"], button {
+  margin-top: 10px;
+  padding: 8px;
+}
+
+#messageContainer {
+  height: 300px;
+  overflow-y: scroll;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.message {
+  margin-bottom: 5px;
+}
+
+.message span {
+  font-weight: bold;
+  color: #007bff;
+}
+
+  
+  
+</style>
+<script>
+  
+ function register() {
+  const usernameInput = document.getElementById("usernameInput");
+  const username = usernameInput.value.trim();
+  if (username !== "") {
+    localStorage.setItem("username", username);
+    document.getElementById("registerPage").style.display = "none";
+    document.getElementById("chatPage").style.display = "block";
+    document.getElementById("welcomeMessage").textContent = username;
+    displayMessages(); // Kaydedilmiş mesajları göster
+  } else {
+    alert("Lütfen bir kullanıcı adı girin!");
+  }
+}
+
+function sendMessage() {
+  const messageInput = document.getElementById("messageInput");
+  const message = messageInput.value.trim();
+  if (message !== "") {
+    const username = localStorage.getItem("username");
+    const messages = JSON.parse(localStorage.getItem("messages") || "[]");
+    messages.push({ username, message });
+    localStorage.setItem("messages", JSON.stringify(messages));
+    displayMessages(); // Yeni mesajı göster
+    messageInput.value = "";
+  } else {
+    alert("Lütfen bir mesaj yazın!");
+  }
+}
+
+function displayMessages() {
+  const messageContainer = document.getElementById("messageContainer");
+  messageContainer.innerHTML = ""; // Önceki mesajları temizle
+  const messages = JSON.parse(localStorage.getItem("messages") || "[]");
+  messages.forEach(msg => {
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message");
+    messageDiv.innerHTML = "<span>" + msg.username + ":</span> " + msg.message;
+    messageContainer.appendChild(messageDiv);
+  });
+}
+
+window.onload = function() {
+  const username = localStorage.getItem("username");
+  if (username) {
+    document.getElementById("registerPage").style.display = "none";
+    document.getElementById("chatPage").style.display = "block";
+    document.getElementById("welcomeMessage").textContent = username;
+    displayMessages(); // Kaydedilmiş mesajları göster
+  }
+};
+
+  
+</script>
+</html>
